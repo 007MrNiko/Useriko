@@ -7,7 +7,7 @@ services:
       args:
         DEBUG: "True"
         SECRET_KEY: "j1^ky1(6a@_#@z=xhhqo%&zdy+x6q((e6bip3pyi*np#ipcatu"
-    command: [ "python", "manage.py", "runserver", "0.0.0.0:8006" ]
+    command: python manage.py runserver 0.0.0.0:8006
     ports:
       - "8006:8006"
   frontend:
