@@ -4,13 +4,14 @@ import Modal from "../components/AccountModal";
 import ErrorAlert from "../components/ErrorAlert";
 import {Table} from "react-bootstrap";
 import Moment from 'moment';
+import getCookie from "../components/csrftoken";
 
 Moment.locale('en');
 
-function FirstError(response){
+function FirstError(response) {
     let errors = []
     for (const [key, value] of Object.entries(response)) {
-      errors.push(value)
+        errors.push(value)
     }
     return errors[0]
 }
@@ -45,7 +46,7 @@ export default class Accounts extends Component {
             <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.username}</td>
-                <td>{Moment(item.created).format("DD/MM/YYYY mm:HH")}</td>
+                <td>{Moment(item.created).format("DD/MM/YYYY HH:mm")}</td>
                 <td>{item.group_name}</td>
                 <td className="custom_actions">
                     <button onClick={() => this.editItem(item)} className="btn btn-secondary mr-2">
@@ -66,7 +67,11 @@ export default class Accounts extends Component {
         this.toggle();
         if (item.id) {
             axios
-                .put(`/api/accounts/${item.id}/`, item)
+                .put(`/api/accounts/${item.id}/`, item, {
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                })
                 .then(res => this.refreshList())
                 .catch(err => {
                     this.setState({errorMessage: FirstError(err.response.data)});
@@ -74,19 +79,27 @@ export default class Accounts extends Component {
             return;
         }
         axios
-            .post("/api/accounts/", item)
+            .post("/api/accounts/", item, {
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                })
             .then(res => this.refreshList())
             .catch(err => {
-                    this.setState({errorMessage: FirstError(err.response.data)});
-                });
+                this.setState({errorMessage: FirstError(err.response.data)});
+            });
     };
     handleDelete = item => {
         axios
-            .delete(`/api/accounts/${item.id}`)
+            .delete(`/api/accounts/${item.id}`, {
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                })
             .then(res => this.refreshList())
             .catch(err => {
-                    this.setState({errorMessage: FirstError(err.response.data)});
-                });
+                this.setState({errorMessage: FirstError(err.response.data)});
+            });
     };
     createItem = () => {
         const item = {username: "", group: ""};
@@ -104,7 +117,7 @@ export default class Accounts extends Component {
                 <div className="row">
                     <div className="col-md-6 col-sm-10 mx-auto p-0">
                         {this.state.errorMessage &&
-                        <ErrorAlert message={this.state.errorMessage} />}
+                        <ErrorAlert message={this.state.errorMessage}/>}
 
                         <div className="card p-3">
                             <div className="">

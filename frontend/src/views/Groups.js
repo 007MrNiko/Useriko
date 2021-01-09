@@ -3,6 +3,7 @@ import axios from "axios";
 import Modal from "../components/GroupModal";
 import ErrorAlert from "../components/ErrorAlert";
 import {Table} from "react-bootstrap";
+import getCookie from "../components/csrftoken";
 
 
 function FirstError(response){
@@ -61,7 +62,11 @@ export default class Groups extends Component {
         this.toggle();
         if (item.id) {
             axios
-                .put(`/api/groups/${item.id}/`, item)
+                .put(`/api/groups/${item.id}/`, item, {
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                })
                 .then(res => this.refreshList())
                 .catch(err => {
                     this.setState({errorMessage: FirstError(err.response.data)});
@@ -69,7 +74,11 @@ export default class Groups extends Component {
             return;
         }
         axios
-            .post("/api/groups/", item)
+            .post("/api/groups/", item, {
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                })
             .then(res => this.refreshList())
             .catch(err => {
                     this.setState({errorMessage: FirstError(err.response.data)});
@@ -77,7 +86,11 @@ export default class Groups extends Component {
     };
     handleDelete = item => {
         axios
-            .delete(`/api/groups/${item.id}`)
+            .delete(`/api/groups/${item.id}`, {
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                })
             .then(res => this.refreshList())
             .catch(err => {
                     console.log(err)
