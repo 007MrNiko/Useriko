@@ -34,11 +34,9 @@ export default class CustomModal extends Component {
             .catch(err => console.log(err));
     };
     renderChoices = () => {
-        let dataList = [];
-         this.state.choicesList.map(item => (
-             dataList.push({value: item.id, label: item.name})
+        return this.state.choicesList.map(item => (
+            <option value={item.id}>{item.name}</option>
         ));
-         return dataList
     };
 
     handleChange = e => {
@@ -48,9 +46,6 @@ export default class CustomModal extends Component {
         this.setState({activeItem});
     };
 
-    handleChangeSelect = (event) => {
-        this.setState({value: event.target.value});
-    };
 
     render() {
         const {toggle, onSave} = this.props;
@@ -72,11 +67,15 @@ export default class CustomModal extends Component {
                         </FormGroup>
                         <FormGroup>
                             <Label for="group">Group</Label>
-                            <Select
+                            <Input
+                                type="select"
                                 name="group"
-                                defaultValue={this.state.activeItem.username}
-                                options={this.renderChoices()}
-                            />
+                                value={this.state.activeItem.group}
+                                onChange={this.handleChange}
+                            >
+                                <option value="">---</option>
+                                {this.renderChoices()}
+                            </Input>
                         </FormGroup>
                     </Form>
                 </ModalBody>

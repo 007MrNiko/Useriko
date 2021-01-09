@@ -1,10 +1,19 @@
 import React, {Component} from "react";
 import axios from "axios";
 import Modal from "../components/AccountModal";
+import ErrorAlert from "../components/ErrorAlert";
 import {Table} from "react-bootstrap";
 import Moment from 'moment';
 
 Moment.locale('en');
+
+function FirstError(response){
+    let errors = []
+    for (const [key, value] of Object.entries(response)) {
+      errors.push(value)
+    }
+    return errors[0]
+}
 
 export default class Accounts extends Component {
     constructor(props) {
@@ -15,6 +24,7 @@ export default class Accounts extends Component {
                 username: "",
                 created: "",
                 group: "",
+                group_name: "",
             },
             usersList: []
         };
@@ -23,6 +33,7 @@ export default class Accounts extends Component {
     componentDidMount() {
         this.refreshList();
     }
+
     refreshList = () => {
         axios
             .get("/api/accounts/")
@@ -35,8 +46,8 @@ export default class Accounts extends Component {
                 <td>{item.id}</td>
                 <td>{item.username}</td>
                 <td>{Moment(item.created).format("DD/MM/YYYY mm:HH")}</td>
-                <td>{item.group}</td>
-                <td>
+                <td>{item.group_name}</td>
+                <td className="custom_actions">
                     <button onClick={() => this.editItem(item)} className="btn btn-secondary mr-2">
                         Edit
                     </button>
@@ -56,18 +67,26 @@ export default class Accounts extends Component {
         if (item.id) {
             axios
                 .put(`/api/accounts/${item.id}/`, item)
-                .then(res => this.refreshList());
+                .then(res => this.refreshList())
+                .catch(err => {
+                    this.setState({errorMessage: FirstError(err.response.data)});
+                });
             return;
         }
-        console.log(item)
         axios
             .post("/api/accounts/", item)
-            .then(res => this.refreshList());
+            .then(res => this.refreshList())
+            .catch(err => {
+                    this.setState({errorMessage: FirstError(err.response.data)});
+                });
     };
     handleDelete = item => {
         axios
             .delete(`/api/accounts/${item.id}`)
-            .then(res => this.refreshList());
+            .then(res => this.refreshList())
+            .catch(err => {
+                    this.setState({errorMessage: FirstError(err.response.data)});
+                });
     };
     createItem = () => {
         const item = {username: "", group: ""};
@@ -81,19 +100,23 @@ export default class Accounts extends Component {
         return (
             <main className="content">
                 <h1 className="text-center my-4">Useriko - Users</h1>
+
                 <div className="row">
                     <div className="col-md-6 col-sm-10 mx-auto p-0">
+                        {this.state.errorMessage &&
+                        <ErrorAlert message={this.state.errorMessage} />}
+
                         <div className="card p-3">
                             <div className="">
-                                <button onClick={this.createItem} className="btn btn-primary">
-                                    Add task
+                                <button onClick={this.createItem} className="btn btn-primary mb-3">
+                                    Add user
                                 </button>
                             </div>
                             <div>
                                 <Table striped bordered hover>
                                     <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>id</th>
                                         <th>Username</th>
                                         <th>Created</th>
                                         <th>Group</th>
