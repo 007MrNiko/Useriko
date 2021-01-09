@@ -1,0 +1,23 @@
+version: "3.0"
+
+services:
+  django:
+    build:
+      context: .
+      args:
+        DEBUG: "True"
+        SECRET_KEY: "j1^ky1(6a@_#@z=xhhqo%&zdy+x6q((e6bip3pyi*np#ipcatu"
+    command: [ "python", "manage.py", "runserver", "0.0.0.0:8006" ]
+    ports:
+      - "8006:8006"
+  frontend:
+    build: ./frontend
+    command: [ "npm", "start" ]
+    volumes:
+      - ./frontend:/frontend
+      - node-modules:/frontend/node_modules
+    ports:
+      - "3000:3000"
+
+volumes:
+  node-modules:
