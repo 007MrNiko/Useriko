@@ -10,7 +10,8 @@ class AccountSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "username": {
                 "error_messages": {
-                    "blank": "Please specify username"
+                    "blank": "Please specify username",
+                    "required": "Please specify group name"
                 }
             },
             "group": {
@@ -24,6 +25,19 @@ class AccountSerializer(serializers.ModelSerializer):
 class AccountGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountGroup
+        extra_kwargs = {
+            "name": {
+                "error_messages": {
+                    "blank": "Please specify group name",
+                    "required": "Please specify group name"
+                }
+            },
+            "group": {
+                "error_messages": {
+                    "null": "Please select user group"
+                }
+            }
+        }
         fields = ["id", "name", "description"]
 
 

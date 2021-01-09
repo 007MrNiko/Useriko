@@ -10,33 +10,15 @@ import {
     Input,
     Label
 } from "reactstrap";
-import axios from "axios";
 
 
 export default class CustomModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeItem: this.props.activeItem,
-            choicesList: []
+            activeItem: this.props.activeItem
         };
     }
-
-    componentDidMount() {
-        this.refreshList();
-    }
-
-    refreshList = () => {
-        axios
-            .get("/api/groups/")
-            .then(res => this.setState({choicesList: res.data}))
-            .catch(err => console.log(err));
-    };
-    renderChoices = () => {
-        return this.state.choicesList.map(item => (
-            <option value={item.id}>{item.name}</option>
-        ));
-    };
 
     handleChange = e => {
         let {name, value} = e.target;
@@ -44,7 +26,6 @@ export default class CustomModal extends Component {
         const activeItem = {...this.state.activeItem, [name]: value};
         this.setState({activeItem});
     };
-
 
     render() {
         const {toggle, onSave} = this.props;
@@ -55,26 +36,23 @@ export default class CustomModal extends Component {
                 <ModalBody>
                     <Form>
                         <FormGroup>
-                            <Label for="username">Username</Label>
+                            <Label for="name">Name</Label>
                             <Input
                                 type="text"
-                                name="username"
-                                value={this.state.activeItem.username}
+                                name="name"
+                                value={this.state.activeItem.name}
                                 onChange={this.handleChange}
-                                placeholder="Enter username"
+                                placeholder="Enter group name"
                             />
                         </FormGroup>
                         <FormGroup>
-                            <Label for="group">Group</Label>
+                            <Label for="description">Description</Label>
                             <Input
-                                type="select"
-                                name="group"
-                                value={this.state.activeItem.group}
+                                type="textarea"
+                                name="description"
+                                value={this.state.activeItem.description}
                                 onChange={this.handleChange}
-                            >
-                                <option value="">---</option>
-                                {this.renderChoices()}
-                            </Input>
+                            />
                         </FormGroup>
                     </Form>
                 </ModalBody>
